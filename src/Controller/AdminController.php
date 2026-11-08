@@ -21,7 +21,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Exception\NoEntitiesConfiguredException;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\UndefinedEntityException;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Util\LegacyFormHelper;
 use Pagerfanta\Pagerfanta;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
@@ -32,14 +32,14 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * The controller used to render all the default EasyAdmin actions.
  *
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
-class AdminController extends Controller
+class AdminController extends AbstractController
 {
     /** @var array The full configuration of the entire backend */
     protected $config;
@@ -51,16 +51,11 @@ class AdminController extends Controller
     protected $em;
 
     /**
-     * @Route("/", name="easyadmin")
-     * @Route("/", name="admin")
-     *
      * The 'admin' route is deprecated since version 1.8.0 and it will be removed in 2.0.
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse|Response
      */
-    public function indexAction(Request $request)
+    #[Route(path: "/", name: "easyadmin")]
+    #[Route(path: "/", name: "admin")]
+    public function indexAction(Request $request): RedirectResponse|Response
     {
         if ('admin' === $request->attributes->get('_route')) {
             trigger_error(sprintf('The "admin" route is deprecated since version 1.8.0 and it will be removed in 2.0. Use the "easyadmin" route instead.'), E_USER_DEPRECATED);

@@ -31,12 +31,12 @@ class DynamicConfigLoadingKernel extends AppKernel
      * used by a different test. After lots of trials and different approaches,
      * this is the only one which always worked as expected.
      */
-    public function getContainerClass()
+    public function getContainerClass(): string
     {
         return 'TestDynamicConfigContainer'.md5(serialize($this->backendConfig));
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         parent::registerContainerConfiguration($loader);
 

@@ -11,10 +11,11 @@
 
 namespace AppTestBundle\DataFixtures\ORM;
 
+use AppTestBundle\Entity\FunctionalTests\Category;
 use AppTestBundle\Entity\FunctionalTests\Product;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class LoadProducts extends AbstractFixture implements OrderedFixtureInterface
 {
@@ -38,12 +39,12 @@ class LoadProducts extends AbstractFixture implements OrderedFixtureInterface
         'Pellentesque et sapien pulvinar, consectetur eros ac, vehicula odio.',
     );
 
-    public function getOrder()
+    public function getOrder(): int
     {
         return 100;
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         foreach (range(1, 100) as $i) {
             $product = new Product();
@@ -136,7 +137,7 @@ class LoadProducts extends AbstractFixture implements OrderedFixtureInterface
         $allCategoryIds = range(1, 100);
 
         for ($i = 0; $i < $numCategories; ++$i) {
-            $categories[] = $this->getReference('category-'.mt_rand(1, 100));
+            $categories[] = $this->getReference('category-'.mt_rand(1, 100), Category::class);
         }
 
         return $categories;

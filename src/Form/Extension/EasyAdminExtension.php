@@ -35,7 +35,7 @@ class EasyAdminExtension extends AbstractTypeExtension
     /**
      * @param RequestStack|null $requestStack
      */
-    public function __construct(RequestStack $requestStack = null)
+    public function __construct(?RequestStack $requestStack = null)
     {
         $this->requestStack = $requestStack;
     }
@@ -43,7 +43,7 @@ class EasyAdminExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public function finishView(FormView $view, FormInterface $form, array $options)
+    public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         if (null !== $this->requestStack) {
             $this->request = $this->requestStack->getCurrentRequest();
@@ -83,7 +83,7 @@ class EasyAdminExtension extends AbstractTypeExtension
      *
      * @param Request|null $request
      */
-    public function setRequest(Request $request = null)
+    public function setRequest(?Request $request = null)
     {
         $this->request = $request;
     }
@@ -99,7 +99,7 @@ class EasyAdminExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public static function getExtendedTypes()
+    public static function getExtendedTypes(): iterable
     {
         // needed to avoid a deprecation when using Symfony 4.2
         return array(LegacyFormHelper::getType('form'));

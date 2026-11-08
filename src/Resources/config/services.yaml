@@ -1,0 +1,178 @@
+services:
+
+    easyadmin.cache.manager:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Cache\CacheManager'
+        public: true
+        arguments:
+            - '%easyadmin.cache.dir%'
+
+    easyadmin.cache.config_warmer:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Cache\ConfigWarmer'
+        public: false
+        arguments:
+            - '@easyadmin.config.manager'
+        tags:
+            - { name: 'kernel.cache_warmer', priority: '-2048' }
+
+    easyadmin.config.manager:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager'
+        public: true
+        arguments:
+            - '@easyadmin.cache.manager'
+            - '@property_accessor'
+            - '%easyadmin.config%'
+            - '%kernel.debug%'
+
+    easyadmin.query_builder:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Search\QueryBuilder'
+        public: true
+        arguments:
+            - '@doctrine'
+
+    easyadmin.finder:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Search\Finder'
+        public: false
+        arguments:
+            - '@easyadmin.query_builder'
+            - '@easyadmin.paginator'
+
+    easyadmin.autocomplete:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Search\Autocomplete'
+        public: true
+        arguments:
+            - '@easyadmin.config.manager'
+            - '@easyadmin.finder'
+            - '@property_accessor'
+
+    easyadmin.paginator:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Search\Paginator'
+        public: true
+
+    easyadmin.router:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Router\EasyAdminRouter'
+        public: true
+        arguments:
+            - '@easyadmin.config.manager'
+            - '@router'
+            - '@property_accessor'
+            - '@?request_stack'
+
+    easyadmin.twig.extension:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Twig\EasyAdminTwigExtension'
+        public: false
+        arguments:
+            - '@easyadmin.config.manager'
+            - '@property_accessor'
+            - '@easyadmin.router'
+            - '%kernel.debug%'
+            - '@?security.logout_url_generator'
+        tags:
+            - { name: 'twig.extension' }
+
+    easyadmin.listener.controller:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\EventListener\ControllerListener'
+        public: true
+        arguments:
+            - '@easyadmin.config.manager'
+            - '@controller_resolver'
+        tags:
+            - { name: 'kernel.event_listener', event: 'kernel.controller', method: 'onKernelController' }
+
+    easyadmin.listener.exception:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\EventListener\ExceptionListener'
+        public: true
+        arguments:
+            - '@twig'
+            - '%easyadmin.config%'
+            - 'easyadmin.listener.exception:showExceptionPageAction'
+            - '@?logger'
+        tags:
+            - { name: 'monolog.logger', channel: 'request' }
+            - { name: 'kernel.event_listener', event: 'kernel.exception', method: 'onKernelException', priority: '-64' }
+
+    easyadmin.listener.request_post_initialize:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\EventListener\RequestPostInitializeListener'
+        public: true
+        arguments:
+            - '@doctrine'
+            - '@?request_stack'
+        tags:
+            - { name: 'kernel.event_listener', event: 'easy_admin.post_initialize', method: 'initializeRequest' }
+
+    easyadmin.data_collector:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\DataCollector\EasyAdminDataCollector'
+        public: false
+        arguments:
+            - '@easyadmin.config.manager'
+        tags:
+            - { name: 'data_collector', template: '@EasyAdmin/data_collector/easyadmin.html.twig', id: 'easyadmin' }
+
+    easyadmin.configuration.normalizer_config_pass:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\NormalizerConfigPass'
+        public: false
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: 'easyadmin.config_pass', priority: '90' }
+
+    easyadmin.configuration.design_config_pass:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\DesignConfigPass'
+        public: false
+        arguments:
+            - !service_closure '@twig'
+            - '%kernel.debug%'
+            - '%kernel.default_locale%'
+        tags:
+            - { name: 'easyadmin.config_pass', priority: '80' }
+
+    easyadmin.configuration.menu_config_pass:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\MenuConfigPass'
+        public: false
+        tags:
+            - { name: 'easyadmin.config_pass', priority: '70' }
+
+    easyadmin.configuration.action_config_pass:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\ActionConfigPass'
+        public: false
+        tags:
+            - { name: 'easyadmin.config_pass', priority: '60' }
+
+    easyadmin.configuration.metadata_config_pass:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\MetadataConfigPass'
+        public: false
+        arguments:
+            - '@doctrine'
+        tags:
+            - { name: 'easyadmin.config_pass', priority: '50' }
+
+    easyadmin.configuration.property_config_pass:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\PropertyConfigPass'
+        public: false
+        arguments:
+            - '@form.registry'
+        tags:
+            - { name: 'easyadmin.config_pass', priority: '40' }
+
+    easyadmin.configuration.view_config_pass:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\ViewConfigPass'
+        public: false
+        tags:
+            - { name: 'easyadmin.config_pass', priority: '30' }
+
+    easyadmin.configuration.template_config_pass:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\TemplateConfigPass'
+        public: false
+        arguments:
+            - '@twig.loader.filesystem'
+        tags:
+            - { name: 'easyadmin.config_pass', priority: '20' }
+
+    easyadmin.configuration.default_config_pass:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\DefaultConfigPass'
+        public: false
+        tags:
+            - { name: 'easyadmin.config_pass', priority: '10' }
+
+    easy_admin.property_accessor:
+        alias: 'property_accessor'
+        public: true

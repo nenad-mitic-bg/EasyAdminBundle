@@ -2,27 +2,23 @@
 # Can be easily overridden in each test config
 parameters:
     locale: en
-    database_path: '%kernel.root_dir%/../../../build/test.db'
 
 framework:
     secret:          secret
     translator:      ~
     default_locale:  '%locale%'
     test:            ~
-    router:          { resource: '%kernel.root_dir%/config/routing_base.yml' }
+    router:          { resource: '%kernel.project_dir%/tests/Fixtures/App/config/routing_base.yml' }
     form:            true
-    validation:      { enable_annotations: true }
     profiler:
         collect: true
     session:
-        storage_id: session.storage.mock_file
+        storage_factory_id: session.storage.factory.mock_file
 
 doctrine:
     dbal:
-        driver: pdo_sqlite
-        path:   '%database_path%'
+        url: 'sqlite:///%kernel.project_dir%/build/test.db'
     orm:
-        auto_generate_proxy_classes: true
         auto_mapping: true
         mappings:
             # UnitTestEntities:
@@ -34,8 +30,8 @@ doctrine:
             #     is_bundle: false
             FunctionalTestEntities:
                 mapping: true
-                type: annotation
-                dir: '%kernel.root_dir%/../AppTestBundle/Entity/FunctionalTests/'
+                type: attribute
+                dir: '%kernel.project_dir%/tests/Fixtures/AppTestBundle/Entity/FunctionalTests/'
                 alias: 'FunctionalTests'
                 prefix: 'AppTestBundle\Entity\FunctionalTests'
                 is_bundle: false
@@ -47,7 +43,6 @@ security:
     firewalls:
         main:
             pattern: ^/
-            anonymous: true
     providers:
         in_memory:
              memory: ~

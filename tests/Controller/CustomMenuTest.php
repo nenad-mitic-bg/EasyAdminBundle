@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class CustomMenuTest extends AbstractTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

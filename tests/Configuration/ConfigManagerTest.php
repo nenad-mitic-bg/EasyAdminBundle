@@ -11,13 +11,16 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Configuration;
 
+use EasyCorp\Bundle\EasyAdminBundle\Tests\Polyfill\DMS\ArraySubsetAsserts;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigManagerTest extends TestCase
 {
-    public static function tearDownAfterClass()
+    use ArraySubsetAsserts;
+
+    public static function tearDownAfterClass(): void
     {
         // this is important because this test generates a different Symfony
         // kernel for each configuration to avoid cache issues
@@ -47,21 +50,14 @@ class ConfigManagerTest extends TestCase
     public function testBackendExceptions($backendConfigFilePath)
     {
         $backendConfig = Yaml::parse(file_get_contents($backendConfigFilePath));
+
         if (isset($backendConfig['expected_exception']['class'])) {
+            $this->expectException($backendConfig['expected_exception']['class']);
+
             if (isset($backendConfig['expected_exception']['message_string'])) {
-                if (method_exists($this, 'expectException')) {
-                    $this->expectException($backendConfig['expected_exception']['class']);
-                    $this->expectExceptionMessage($backendConfig['expected_exception']['message_string']);
-                } else {
-                    $this->setExpectedException($backendConfig['expected_exception']['class'], $backendConfig['expected_exception']['message_string']);
-                }
+                $this->expectExceptionMessage($backendConfig['expected_exception']['message_string']);
             } elseif (isset($backendConfig['expected_exception']['message_regexp'])) {
-                if (method_exists($this, 'expectException')) {
-                    $this->expectException($backendConfig['expected_exception']['class']);
-                    $this->expectExceptionMessageRegExp($backendConfig['expected_exception']['message_regexp']);
-                } else {
-                    $this->setExpectedExceptionRegExp($backendConfig['expected_exception']['class'], $backendConfig['expected_exception']['message_regexp']);
-                }
+                $this->expectExceptionMessageMatches($backendConfig['expected_exception']['message_regexp']);
             }
         }
 

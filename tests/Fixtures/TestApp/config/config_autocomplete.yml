@@ -1,0 +1,19 @@
+imports:
+    - { resource: config.yml }
+
+framework:
+    # This file overrides the EasyAdmin controller
+    router: { resource: "%kernel.project_dir%/tests/Fixtures/TestApp/config/routing_override.yml" }
+
+easy_admin:
+    entities:
+        Category:
+            class: TestApp\Entity\FunctionalTests\Category
+            form:
+                fields:
+                    - name
+                    - { property: 'parent', type: 'easyadmin_autocomplete' }
+        Image: TestApp\Entity\FunctionalTests\Image
+        Purchase: TestApp\Entity\FunctionalTests\Purchase
+        PurchaseItem: TestApp\Entity\FunctionalTests\PurchaseItem
+        Product: TestApp\Entity\FunctionalTests\Product

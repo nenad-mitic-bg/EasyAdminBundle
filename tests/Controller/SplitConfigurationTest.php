@@ -12,6 +12,7 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Controller;
 
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Fixtures\AbstractTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class SplitConfigurationTest extends AbstractTestCase
 {
@@ -28,9 +29,7 @@ class SplitConfigurationTest extends AbstractTestCase
         $this->assertSame('blue', $backendConfig['design']['brand_color']);
     }
 
-    /**
-     * @group legacy
-     */
+    #[Group('legacy')]
     public function testConfigurationErrorsInDifferentFiles()
     {
         if (method_exists($this, 'expectException')) {

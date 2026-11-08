@@ -12,19 +12,18 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Controller;
 
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Fixtures\AbstractTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class FormViewTest extends AbstractTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->initClient(array('environment' => 'form_view'));
     }
 
-    /**
-     * @group legacy
-     */
+    #[Group('legacy')]
     public function testNewView()
     {
         $crawler = $this->requestNewView('Product');
@@ -45,9 +44,7 @@ class FormViewTest extends AbstractTestCase
         );
     }
 
-    /**
-     * @group legacy
-     */
+    #[Group('legacy')]
     public function testEditView()
     {
         $crawler = $this->requestEditView('Product', 1);

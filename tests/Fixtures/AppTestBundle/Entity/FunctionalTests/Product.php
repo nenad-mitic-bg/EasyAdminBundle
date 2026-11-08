@@ -14,52 +14,51 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- *
  * @author MacFJA
  */
+#[ORM\Entity]
 class Product
 {
     /**
      * The identifier of the product.
      *
      * @var int
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * The creation date of the product.
      *
      * @var \DateTime
-     * @ORM\Column(type="datetime", name="created_at")
      */
+    #[ORM\Column(type: 'datetime', name: 'created_at')]
     protected $createdAt;
 
     /**
      * List of tags associated to the product.
      *
      * @var string[]
-     * @ORM\Column(type="simple_array")
      */
+    #[ORM\Column(type: 'simple_array')]
     protected $tags = array();
 
     /**
      * The EAN 13 of the product. (type set to string in PHP due to 32 bit limitation).
      *
      * @var string
-     * @ORM\Column(type="bigint")
      */
+    #[ORM\Column(type: 'bigint')]
     protected $ean;
 
     /**
      * Indicate if the product is enabled (available in store).
      *
      * @var bool
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     protected $enabled = false;
 
     /**
@@ -71,8 +70,8 @@ class Product
      * )</pre>.
      *
      * @var array
-     * @ORM\Column(type="array")
      */
+    #[ORM\Column(type: 'json')]
     protected $features = array();
 
     /**
@@ -83,32 +82,32 @@ class Product
      * </ul></pre>.
      *
      * @var string
-     * @ORM\Column(type="string")
      */
+    #[ORM\Column(type: 'string')]
     protected $htmlFeatures = '';
 
     /**
      * The price of the product.
      *
      * @var float
-     * @ORM\Column(type="float")
      */
+    #[ORM\Column(type: 'float')]
     protected $price = 0.0;
 
     /**
      * The name of the product.
      *
      * @var string
-     * @ORM\Column(type="string")
      */
+    #[ORM\Column(type: 'string')]
     protected $name;
 
     /**
      * The description of the product.
      *
      * @var string
-     * @ORM\Column(type="text")
      */
+    #[ORM\Column(type: 'text')]
     protected $description;
 
     /**
@@ -116,17 +115,17 @@ class Product
      * (Owning side).
      *
      * @var ArrayCollection
-     * @ORM\ManyToMany(targetEntity="Category", inversedBy="products")
-     * @ORM\JoinTable(name="product_category")
      */
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'products')]
+    #[ORM\JoinTable(name: 'product_category')]
     protected $categories;
     /**
      * The image of the product.
      *
      * @var Image
-     * @ORM\OneToOne(targetEntity="Image")
-     * @ORM\JoinColumn(name="image_id", referencedColumnName="id")
      */
+    #[ORM\OneToOne(targetEntity: Image::class)]
+    #[ORM\JoinColumn(name: 'image_id', referencedColumnName: 'id')]
     protected $image;
 
     /**

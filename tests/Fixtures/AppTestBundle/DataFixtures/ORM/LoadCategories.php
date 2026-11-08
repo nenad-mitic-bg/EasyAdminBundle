@@ -14,16 +14,16 @@ namespace AppTestBundle\DataFixtures\ORM;
 use AppTestBundle\Entity\FunctionalTests\Category;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class LoadCategories extends AbstractFixture implements OrderedFixtureInterface
 {
-    public function getOrder()
+    public function getOrder(): int
     {
         return 20;
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         foreach (range(1, 100) as $i) {
             $category = new Category();
@@ -38,7 +38,7 @@ class LoadCategories extends AbstractFixture implements OrderedFixtureInterface
         foreach (range(1, 100) as $i) {
             $category = new Category();
             $category->setName('Category #'.$i);
-            $category->setParent($this->getReference('category-'.$i));
+            $category->setParent($this->getReference('category-'.$i, Category::class));
 
             $this->addReference('category-'.(100 + $i), $category);
             $manager->persist($category);

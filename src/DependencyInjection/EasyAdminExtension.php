@@ -15,9 +15,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Form\Util\LegacyFormHelper;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 
 /**
  * Resolves all the backend configuration values and most of the entities
@@ -31,7 +31,7 @@ class EasyAdminExtension extends Extension
     /**
      * {@inheritdoc}
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         // process bundle's configuration parameters
         $configs = $this->processConfigFiles($configs);
@@ -40,9 +40,9 @@ class EasyAdminExtension extends Extension
         $container->setParameter('easyadmin.cache.dir', $container->getParameter('kernel.cache_dir').'/easy_admin');
 
         // load bundle's services
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.xml');
-        $loader->load('form.xml');
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yaml');
+        $loader->load('form.yaml');
 
         if ($container->getParameter('kernel.debug')) {
             // in 'dev', use the built-in Symfony exception listener

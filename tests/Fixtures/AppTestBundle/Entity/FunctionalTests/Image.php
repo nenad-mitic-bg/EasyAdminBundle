@@ -13,36 +13,35 @@ namespace AppTestBundle\Entity\FunctionalTests;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- *
  * @author MacFJA
  */
+#[ORM\Entity]
 class Image
 {
     /**
      * The identifier of the image.
      *
      * @var int
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * The raw data of the full size image.
      *
      * @var resource
-     * @ORM\Column(type="blob", name="image_data")
      */
+    #[ORM\Column(type: 'blob', name: 'image_data')]
     protected $data;
 
     /**
      * The raw data of the thumbnail of the image.
      *
      * @var resource
-     * @ORM\Column(type="blob")
      */
+    #[ORM\Column(type: 'blob')]
     protected $thumbnail;
 
     public function __toString()

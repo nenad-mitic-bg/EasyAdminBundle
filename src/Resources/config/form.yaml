@@ -1,0 +1,96 @@
+services:
+
+    easyadmin.form.type:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\EasyAdminFormType'
+        arguments:
+            - '@easyadmin.config.manager'
+            - []
+        tags:
+            - { name: 'form.type', alias: 'easyadmin' }
+
+    easyadmin.form.type.autocomplete:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\EasyAdminAutocompleteType'
+        arguments:
+            - '@easyadmin.config.manager'
+        tags:
+            - { name: 'form.type', alias: 'easyadmin_autocomplete' }
+
+    easyadmin.form.type.divider:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\EasyAdminDividerType'
+        tags:
+            - { name: 'form.type', alias: 'easyadmin_divider' }
+
+    easyadmin.form.type.section:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\EasyAdminSectionType'
+        tags:
+            - { name: 'form.type', alias: 'easyadmin_section' }
+
+    easyadmin.form.type.group:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\EasyAdminGroupType'
+        tags:
+            - { name: 'form.type', alias: 'easyadmin_group' }
+
+    easyadmin.form.type.extension:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Extension\EasyAdminExtension'
+        arguments:
+            - '@?request_stack'
+        tags:
+            - { name: 'form.type_extension', alias: 'form', extended-type: 'Symfony\Component\Form\Extension\Core\Type\FormType' }
+
+    easyadmin.form.type_guesser_chain:
+        class: 'Symfony\Component\Form\FormTypeGuesserChain'
+        public: false
+        arguments:
+            - []
+
+    easyadmin.form.type.configurator.autocomplete:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\Configurator\AutocompleteTypeConfigurator'
+        public: false
+        tags:
+            - { name: 'easyadmin.form.type.configurator', priority: '30' }
+
+    easyadmin.form.type.configurator.collection:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\Configurator\CollectionTypeConfigurator'
+        public: false
+        tags:
+            - { name: 'easyadmin.form.type.configurator', priority: '20' }
+
+    easyadmin.form.type.configurator.checkbox:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\Configurator\CheckboxTypeConfigurator'
+        public: false
+        tags:
+            - { name: 'easyadmin.form.type.configurator', priority: '10' }
+
+    easyadmin.form.type.configurator.type:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\Configurator\TypeConfigurator'
+        public: false
+        arguments:
+            - '@easyadmin.config.manager'
+        tags:
+            - { name: 'easyadmin.form.type.configurator', priority: '0' }
+
+    easyadmin.form.type.configurator.entity:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\Configurator\EntityTypeConfigurator'
+        public: false
+        tags:
+            - { name: 'easyadmin.form.type.configurator', priority: '-20' }
+
+    easyadmin.form.type.configurator.ivory_ckeditor:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\Configurator\IvoryCKEditorTypeConfigurator'
+        public: false
+        tags:
+            - { name: 'easyadmin.form.type.configurator', priority: '-130' }
+
+    easyadmin.form.type.configurator.fos_ckeditor:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Type\Configurator\FOSCKEditorTypeConfigurator'
+        public: false
+        tags:
+            - { name: 'easyadmin.form.type.configurator', priority: '-130' }
+
+    easyadmin.form.guesser.missing_doctrine_orm_type_guesser:
+        class: 'EasyCorp\Bundle\EasyAdminBundle\Form\Guesser\MissingDoctrineOrmTypeGuesser'
+        public: true
+        arguments:
+            - '@doctrine'
+        tags:
+            - { name: 'form.type_guesser' }

@@ -4,18 +4,20 @@ namespace AppTestBundle\DataFixtures\ORM;
 
 use AppTestBundle\Entity\FunctionalTests\Purchase;
 use AppTestBundle\Entity\FunctionalTests\PurchaseItem;
+use AppTestBundle\Entity\FunctionalTests\Product;
+use AppTestBundle\Entity\FunctionalTests\User;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class LoadPurchases extends AbstractFixture implements OrderedFixtureInterface
 {
-    public function getOrder()
+    public function getOrder(): int
     {
         return 200;
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         foreach (range(1, 30) as $i) {
             $purchase = new Purchase();
@@ -28,7 +30,7 @@ class LoadPurchases extends AbstractFixture implements OrderedFixtureInterface
                 'line1' => '1234 Main Street',
                 'line2' => 'Big City, XX 23456',
             )));
-            $purchase->setBuyer($this->getReference('user-'.($i % 20 + 1)));
+            $purchase->setBuyer($this->getReference('user-'.($i % 20 + 1), User::class));
 
             $this->addReference('purchase-'.$i, $purchase);
             $manager->persist($purchase);
@@ -40,7 +42,7 @@ class LoadPurchases extends AbstractFixture implements OrderedFixtureInterface
                 $item->setQuantity(rand(1, 3));
                 $item->setProduct($this->getRandomProduct());
                 $item->setTaxRate(0.21);
-                $item->setPurchase($this->getReference('purchase-'.$i));
+                $item->setPurchase($this->getReference('purchase-'.$i, Purchase::class));
 
                 $manager->persist($item);
             }
@@ -71,6 +73,6 @@ class LoadPurchases extends AbstractFixture implements OrderedFixtureInterface
     {
         $productId = rand(1, 100);
 
-        return $this->getReference('product-'.$productId);
+        return $this->getReference('product-'.$productId, Product::class);
     }
 }

@@ -13,49 +13,46 @@ namespace AppTestBundle\Entity\FunctionalTests;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- *
  * @author MacFJA
  */
+#[ORM\Entity]
 class PurchaseItem
 {
     /**
      * @var int
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected $id = null;
 
     /**
      * The ordered quantity.
      *
      * @var int
-     * @ORM\Column(type="smallint")
      */
+    #[ORM\Column(type: 'smallint')]
     protected $quantity = 1;
 
     /**
      * The tax rate to apply on the product.
      *
      * @var float
-     * @ORM\Column(type="decimal", name="tax_rate")
      */
+    #[ORM\Column(type: 'decimal', name: 'tax_rate', precision: 5, scale: 2)]
     protected $taxRate = 0.21;
 
     /**
      * The ordered product.
      *
      * @var Product
-     * @ORM\ManyToOne(targetEntity="Product", inversedBy="purchasedItems")
-     * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      */
+    #[ORM\ManyToOne(targetEntity: Product::class, inversedBy: 'purchasedItems')]
+    #[ORM\JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     protected $product;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Purchase", inversedBy="purchasedItems")
-     * @ORM\JoinColumn(name="purchase_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Purchase::class, inversedBy: 'purchasedItems')]
+    #[ORM\JoinColumn(name: 'purchase_id', referencedColumnName: 'id')]
     protected $purchase;
 
     /**

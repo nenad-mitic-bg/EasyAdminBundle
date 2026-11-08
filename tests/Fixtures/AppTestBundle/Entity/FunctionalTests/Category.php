@@ -15,46 +15,45 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
- *
  * @author MacFJA
  */
+#[ORM\Entity]
 class Category
 {
     /**
      * The identifier of the category.
      *
      * @var int
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * The category name.
      *
      * @var string
-     * @ORM\Column(type="string")
      * @Assert\NotNull(groups={"Validate"})
      */
+    #[ORM\Column(type: 'string')]
     protected $name;
 
     /**
      * Product in the category.
      *
      * @var ArrayCollection
-     * @ORM\ManyToMany(targetEntity="Product", mappedBy="categories")
      **/
+    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'categories')]
     protected $products;
 
     /**
      * The category parent.
      *
      * @var Category
-     * @ORM\OneToOne(targetEntity="Category")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
      **/
+    #[ORM\OneToOne(targetEntity: Category::class)]
+    #[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'id', nullable: true)]
     protected $parent;
 
     /**

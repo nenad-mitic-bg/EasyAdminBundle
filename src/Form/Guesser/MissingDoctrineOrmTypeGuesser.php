@@ -11,7 +11,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Form\Guesser;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Bridge\Doctrine\Form\DoctrineOrmTypeGuesser;
 use Symfony\Component\Form\Guess\Guess;
@@ -22,7 +22,7 @@ class MissingDoctrineOrmTypeGuesser extends DoctrineOrmTypeGuesser
     /**
      * {@inheritdoc}
      */
-    public function guessType($class, $property)
+    public function guessType($class, $property): ?TypeGuess
     {
         if (null !== $metadataAndName = $this->getMetadata($class)) {
             /** @var ClassMetadataInfo $metadata */
@@ -35,15 +35,14 @@ class MissingDoctrineOrmTypeGuesser extends DoctrineOrmTypeGuesser
                     return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', array(), Guess::HIGH_CONFIDENCE);
                 case 'time_immutable': // available since Doctrine 2.6
                     return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TimeType', array(), Guess::HIGH_CONFIDENCE);
-                case Type::SIMPLE_ARRAY:
-                case Type::JSON_ARRAY:
+                case Types::SIMPLE_ARRAY:
+                case Types::JSON:
                     return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\CollectionType', array(), Guess::MEDIUM_CONFIDENCE);
                 case 'json': // available since Doctrine 2.6.2
                     return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextareaType', array(), Guess::MEDIUM_CONFIDENCE);
-                case Type::OBJECT:
-                case Type::BLOB:
+                case Types::BLOB:
                     return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextareaType', array(), Guess::MEDIUM_CONFIDENCE);
-                case Type::GUID:
+                case Types::GUID:
                     return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\TextType', array(), Guess::MEDIUM_CONFIDENCE);
             }
         }

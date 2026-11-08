@@ -84,7 +84,7 @@ class EntityNotFoundException extends \Exception
 
 class TestKernel implements HttpKernelInterface
 {
-    public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = true)
+    public function handle(Request $request, $type = self::MAIN_REQUEST, $catch = true): Response
     {
         return new Response('foo');
     }

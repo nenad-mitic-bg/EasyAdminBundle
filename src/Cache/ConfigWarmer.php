@@ -31,7 +31,7 @@ class ConfigWarmer implements CacheWarmerInterface
     /**
      * {@inheritdoc}
      */
-    public function warmUp($cacheDir)
+    public function warmUp($cacheDir, ?string $buildDir = null): array
     {
         try {
             // this forces the full processing of the backend configuration
@@ -46,7 +46,7 @@ class ConfigWarmer implements CacheWarmerInterface
     /**
      * {@inheritdoc}
      */
-    public function isOptional()
+    public function isOptional(): bool
     {
         return false;
     }

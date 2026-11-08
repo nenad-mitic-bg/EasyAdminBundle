@@ -6,16 +6,16 @@ use AppTestBundle\Entity\FunctionalTests\LegacyUser;
 use AppTestBundle\Entity\FunctionalTests\User;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class LoadUsers extends AbstractFixture implements OrderedFixtureInterface
 {
-    public function getOrder()
+    public function getOrder(): int
     {
         return 10;
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         foreach (range(1, 20) as $i) {
             // TODO: remove this check when PHP 5.3 is no longer supported

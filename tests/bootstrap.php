@@ -9,7 +9,6 @@
  * file that was distributed with this source code.
  */
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput as ConsoleOutput;
@@ -22,13 +21,7 @@ $file = __DIR__.'/../vendor/autoload.php';
 if (!file_exists($file)) {
     throw new RuntimeException('Install dependencies using Composer to run the test suite.');
 }
-$autoload = require $file;
-
-AnnotationRegistry::registerLoader(function ($class) use ($autoload) {
-    $autoload->loadClass($class);
-
-    return class_exists($class, false);
-});
+require $file;
 
 // Test Setup: remove all the contents in the build/ directory
 // (PHP doesn't allow to delete directories unless they are empty)
@@ -47,10 +40,6 @@ include __DIR__.'/Fixtures/App/AppKernel.php';
 
 $application = new Application(new AppKernel('default_backend', true));
 $application->setAutoExit(false);
-
-// Create database
-$input = new ArrayInput(array('command' => 'doctrine:database:create'));
-$application->run($input, new ConsoleOutput());
 
 // Create database schema
 $input = new ArrayInput(array('command' => 'doctrine:schema:create'));

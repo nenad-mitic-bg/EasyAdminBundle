@@ -12,19 +12,18 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Controller;
 
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Fixtures\AbstractTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class CustomFieldTemplateTest extends AbstractTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->initClient(array('environment' => 'custom_field_template'));
     }
 
-    /**
-     * @group legacy
-     */
+    #[Group('legacy')]
     public function testListViewCustomFieldTemplate()
     {
         $crawler = $this->requestListView();
@@ -34,9 +33,7 @@ class CustomFieldTemplateTest extends AbstractTestCase
         $this->assertContains('The custom template knows that the "this_property_does_no_exist" field is not accessible.', $crawler->filter('#main table td[data-label="This property does no exist"]')->eq(0)->text());
     }
 
-    /**
-     * @group legacy
-     */
+    #[Group('legacy')]
     public function testShowViewCustomFieldTemplate()
     {
         $crawler = $this->requestShowView();

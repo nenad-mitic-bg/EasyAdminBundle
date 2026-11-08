@@ -11,7 +11,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Configuration;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 
@@ -23,10 +23,10 @@ use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
  */
 class MetadataConfigPass implements ConfigPassInterface
 {
-    /** @var ManagerRegistry */
+    /** @var Registry */
     private $doctrine;
 
-    public function __construct(ManagerRegistry $doctrine)
+    public function __construct(Registry $doctrine)
     {
         $this->doctrine = $doctrine;
     }
@@ -79,10 +79,13 @@ class MetadataConfigPass implements ConfigPassInterface
 
         // introspect fields for entity associations
         foreach ($entityMetadata->associationMappings as $fieldName => $associationMetadata) {
-            $entityPropertiesMetadata[$fieldName] = array_merge($associationMetadata, array(
-                'type' => 'association',
-                'associationType' => $associationMetadata['type'],
-            ));
+            $entityPropertiesMetadata[$fieldName] = array_merge(
+                DoctrineMappingToArrayConverter::convert($associationMetadata),
+                array(
+                    'type' => 'association',
+                    'associationType' => $associationMetadata['type'],
+                )
+            );
 
             // associations different from *-to-one cannot be sorted
             if ($associationMetadata['type'] & ClassMetadata::TO_MANY) {

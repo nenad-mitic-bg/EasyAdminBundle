@@ -5,58 +5,48 @@ namespace AppTestBundle\Entity\FunctionalTests;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class User
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
      */
+    #[ORM\Column(type: 'string', length: 64)]
     protected $username;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=255)
      */
+    #[ORM\Column(type: 'string', length: 255)]
     protected $email;
 
     /**
      * @var Purchase[]
-     *
-     * @ORM\OneToMany(targetEntity="Purchase", mappedBy="buyer", cascade={"remove"})
      */
+    #[ORM\OneToMany(targetEntity: Purchase::class, mappedBy: 'buyer', cascade: ['remove'])]
     private $purchases;
 
     /**
      * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="createdAtDateTimeImmutable", type="datetime_immutable")
      */
+    #[ORM\Column(name: 'createdAtDateTimeImmutable', type: 'datetime_immutable')]
     private $createdAtDateTimeImmutable;
 
     /**
      * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="createdAtDateImmutable", type="date_immutable")
      */
+    #[ORM\Column(name: 'createdAtDateImmutable', type: 'date_immutable')]
     private $createdAtDateImmutable;
 
     /**
      * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="createdAtTimeImmutable", type="time_immutable")
      */
+    #[ORM\Column(name: 'createdAtTimeImmutable', type: 'time_immutable')]
     private $createdAtTimeImmutable;
 
     public function __toString()

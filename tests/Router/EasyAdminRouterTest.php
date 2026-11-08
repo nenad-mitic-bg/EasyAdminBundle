@@ -25,7 +25,7 @@ final class EasyAdminRouterTest extends AbstractTestCase
      */
     private $router;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

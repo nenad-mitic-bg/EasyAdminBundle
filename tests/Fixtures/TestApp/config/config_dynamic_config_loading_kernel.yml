@@ -1,0 +1,13 @@
+imports:
+    - { resource: config.yml }
+
+doctrine:
+    orm:
+        mappings:
+            UnitTestEntities:
+                mapping: true
+                type: attribute
+                dir: '%kernel.project_dir%/tests/Fixtures/TestApp/Entity/UnitTests/'
+                alias: 'UnitTests'
+                prefix: 'TestApp\Entity\UnitTests'
+                is_bundle: false

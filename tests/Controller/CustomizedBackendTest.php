@@ -12,13 +12,12 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Controller;
 
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Fixtures\AbstractTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class CustomizedBackendTest extends AbstractTestCase
 {
-    /**
-     * @group legacy
-     */
-    public function setUp()
+    #[Group('legacy')]
+    public function setUp(): void
     {
         parent::setUp();
 

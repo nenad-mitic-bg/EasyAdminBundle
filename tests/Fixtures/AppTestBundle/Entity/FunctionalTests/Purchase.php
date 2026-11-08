@@ -15,83 +15,82 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- *
  * @author MacFJA
  */
+#[ORM\Entity]
 class Purchase
 {
     /**
      * The purchase increment id. This identifier will be use in all communication between the customer and the store.
      *
      * @var string
-     * @ORM\Column(type="string", name="id", nullable=false)
-     * @ORM\Id
      */
+    #[ORM\Column(type: 'string', name: 'id', nullable: false)]
+    #[ORM\Id]
     protected $id = null;
 
     /**
      * The Unique id of the purchase.
      *
      * @var string
-     * @ORM\Column(type="guid")
      */
+    #[ORM\Column(type: 'guid')]
     protected $guid = null;
 
     /**
      * The date of the delivery (it doesn't include the time).
      *
      * @var \DateTime
-     * @ORM\Column(type="date")
      */
+    #[ORM\Column(type: 'date')]
     protected $deliveryDate = null;
 
     /**
      * The purchase datetime in the customer timezone.
      *
      * @var \DateTime
-     * @ORM\Column(type="datetimetz")
      */
+    #[ORM\Column(type: 'datetimetz')]
     protected $createdAt = null;
 
     /**
      * The shipping information.
      *
      * @var Shipment
-     * @ORM\Column(type="object")
      */
+    #[ORM\Column(type: 'json_object')]
     protected $shipping = null;
 
     /**
      * The customer preferred time of the day for the delivery.
      *
      * @var \DateTime|null
-     * @ORM\Column(type="time", nullable=true)
      */
+    #[ORM\Column(type: 'time', nullable: true)]
     protected $deliveryHour = null;
 
     /**
      * The customer billing address.
      *
      * @var array
-     * @ORM\Column(type="json_array")
      */
+    #[ORM\Column(type: 'json')]
     protected $billingAddress = array();
 
     /**
      * The user who made the purchase.
      *
      * @var User
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="purchases")
      */
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'purchases')]
     protected $buyer;
 
     /**
      * Items that have been purchased.
      *
      * @var PurchaseItem[]
-     * @ORM\OneToMany(targetEntity="PurchaseItem", mappedBy="purchase", cascade={"remove"})
      */
+    #[ORM\OneToMany(targetEntity: PurchaseItem::class, mappedBy: 'purchase', cascade: ['remove'])]
     protected $purchasedItems;
 
     /**

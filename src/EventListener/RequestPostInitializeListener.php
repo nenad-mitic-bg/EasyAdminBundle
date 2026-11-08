@@ -29,7 +29,7 @@ class RequestPostInitializeListener
      * @param Registry          $doctrine
      * @param RequestStack|null $requestStack
      */
-    public function __construct(Registry $doctrine, RequestStack $requestStack = null)
+    public function __construct(Registry $doctrine, ?RequestStack $requestStack = null)
     {
         $this->doctrine = $doctrine;
         $this->requestStack = $requestStack;
@@ -41,7 +41,7 @@ class RequestPostInitializeListener
      *
      * @param Request|null $request
      */
-    public function setRequest(Request $request = null)
+    public function setRequest(?Request $request = null)
     {
         $this->request = $request;
     }

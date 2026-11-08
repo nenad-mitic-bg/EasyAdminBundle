@@ -7,58 +7,49 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Legacy User class used in PHP < 5.5 versions where DateTimeImmutable doesn't exist.
- *
- * @ORM\Entity
  */
+#[ORM\Entity]
 class LegacyUser
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Id]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
      */
+    #[ORM\Column(type: 'string', length: 64)]
     protected $username;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=255)
      */
+    #[ORM\Column(type: 'string', length: 255)]
     protected $email;
 
     /**
      * @var Purchase[]
-     *
-     * @ORM\OneToMany(targetEntity="Purchase", mappedBy="buyer", cascade={"remove"})
      */
+    #[ORM\OneToMany(targetEntity: Purchase::class, mappedBy: 'buyer', cascade: ['remove'])]
     private $purchases;
 
     /**
      * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="createdAtDateTimeImmutable", type="datetime")
      */
+    #[ORM\Column(name: 'createdAtDateTimeImmutable', type: 'datetime')]
     private $createdAtDateTimeImmutable;
 
     /**
      * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="createdAtDateImmutable", type="date")
      */
+    #[ORM\Column(name: 'createdAtDateImmutable', type: 'date')]
     private $createdAtDateImmutable;
 
     /**
      * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="createdAtTimeImmutable", type="time")
      */
+    #[ORM\Column(name: 'createdAtTimeImmutable', type: 'time')]
     private $createdAtTimeImmutable;
 
     public function __toString()

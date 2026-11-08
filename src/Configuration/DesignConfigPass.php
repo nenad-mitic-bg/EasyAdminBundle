@@ -11,6 +11,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Configuration;
 
+use Closure;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,8 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class DesignConfigPass implements ConfigPassInterface
 {
-    /** @var ContainerInterface */
-    private $container;
+    private Closure $twigFactory;
     /** @var bool */
     private $kernelDebug;
     /** @var string */
@@ -33,9 +33,9 @@ class DesignConfigPass implements ConfigPassInterface
      * @var bool               $kernelDebug
      * @var string             $locale
      */
-    public function __construct(ContainerInterface $container, $kernelDebug, $locale)
+    public function __construct(Closure $twigFactory, $kernelDebug, $locale)
     {
-        $this->container = $container;
+        $this->twigFactory = $twigFactory;
         $this->kernelDebug = $kernelDebug;
         $this->locale = $locale;
     }
@@ -64,7 +64,7 @@ class DesignConfigPass implements ConfigPassInterface
 
     private function processCustomCss(array $backendConfig)
     {
-        $customCssContent = $this->container->get('twig')->render('@EasyAdmin/css/easyadmin.css.twig', array(
+        $customCssContent = ($this->twigFactory)()->render('@EasyAdmin/css/easyadmin.css.twig', array(
             'brand_color' => $backendConfig['design']['brand_color'],
             'color_scheme' => $backendConfig['design']['color_scheme'],
             'kernel_debug' => $this->kernelDebug,

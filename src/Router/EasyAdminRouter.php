@@ -35,7 +35,7 @@ final class EasyAdminRouter
     /** @var Request */
     private $request;
 
-    public function __construct(ConfigManager $configManager, UrlGeneratorInterface $urlGenerator, PropertyAccessorInterface $propertyAccessor, RequestStack $requestStack = null)
+    public function __construct(ConfigManager $configManager, UrlGeneratorInterface $urlGenerator, PropertyAccessorInterface $propertyAccessor, ?RequestStack $requestStack = null)
     {
         $this->configManager = $configManager;
         $this->urlGenerator = $urlGenerator;
@@ -90,7 +90,7 @@ final class EasyAdminRouter
      *
      * @param Request|null $request
      */
-    public function setRequest(Request $request = null)
+    public function setRequest(?Request $request = null)
     {
         $this->request = $request;
     }

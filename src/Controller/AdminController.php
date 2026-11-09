@@ -55,7 +55,6 @@ class AdminController extends AbstractController
     protected $request;
 
     public function __construct(
-        private ConfigManager $configManager,
         protected ManagerRegistry $doctrine,
         protected EntityManagerInterface $em,
         protected EventDispatcherInterface $dispatcher,
@@ -98,7 +97,7 @@ class AdminController extends AbstractController
     {
         $this->dispatch(EasyAdminEvents::PRE_INITIALIZE);
 
-        $this->config = $this->configManager->getBackendConfig();
+        $this->config = $this->get('easyadmin.config.manager')->getBackendConfig();
 
         if (0 === count($this->config['entities'])) {
             throw new NoEntitiesConfiguredException();
@@ -114,7 +113,7 @@ class AdminController extends AbstractController
             throw new UndefinedEntityException(array('entity_name' => $entityName));
         }
 
-        $this->entity = $this->configManager->getEntityConfiguration($entityName);
+        $this->entity = $this->get('easyadmin.config.manager')->getEntityConfiguration($entityName);
 
         $action = $request->query->get('action', 'list');
         if (!$request->query->has('sortField')) {

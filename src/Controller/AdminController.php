@@ -12,8 +12,10 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Controller;
 
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
+use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager;
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\EntityRemoveException;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\ForbiddenActionException;
@@ -33,6 +35,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * The controller used to render all the default EasyAdmin actions.
@@ -43,12 +47,21 @@ class AdminController extends AbstractController
 {
     /** @var array The full configuration of the entire backend */
     protected $config;
+
     /** @var array The full configuration of the current entity */
     protected $entity = array();
+
     /** @var Request The instance of the current Symfony request */
     protected $request;
-    /** @var EntityManager The Doctrine entity manager for the current entity */
-    protected $em;
+
+    public function __construct(
+        private ConfigManager $configManager,
+        protected ManagerRegistry $doctrine,
+        protected EntityManagerInterface $em,
+        protected EventDispatcherInterface $dispatcher,
+        protected UrlGeneratorInterface $router,
+    ) {
+    }
 
     /**
      * The 'admin' route is deprecated since version 1.8.0 and it will be removed in 2.0.
@@ -72,7 +85,7 @@ class AdminController extends AbstractController
             throw new ForbiddenActionException(array('action' => $action, 'entity_name' => $this->entity['name']));
         }
 
-        return $this->executeDynamicMethod($action.'<EntityName>Action');
+        return $this->executeDynamicMethod($action . '<EntityName>Action');
     }
 
     /**
@@ -85,7 +98,7 @@ class AdminController extends AbstractController
     {
         $this->dispatch(EasyAdminEvents::PRE_INITIALIZE);
 
-        $this->config = $this->get('easyadmin.config.manager')->getBackendConfig();
+        $this->config = $this->configManager->getBackendConfig();
 
         if (0 === count($this->config['entities'])) {
             throw new NoEntitiesConfiguredException();
@@ -101,7 +114,7 @@ class AdminController extends AbstractController
             throw new UndefinedEntityException(array('entity_name' => $entityName));
         }
 
-        $this->entity = $this->get('easyadmin.config.manager')->getEntityConfiguration($entityName);
+        $this->entity = $this->configManager->getEntityConfiguration($entityName);
 
         $action = $request->query->get('action', 'list');
         if (!$request->query->has('sortField')) {
@@ -113,7 +126,7 @@ class AdminController extends AbstractController
             $request->query->set('sortDirection', $sortDirection);
         }
 
-        $this->em = $this->getDoctrine()->getManagerForClass($this->entity['class']);
+        $this->em = $this->doctrine->getManagerForClass($this->entity['class']);
         $this->request = $request;
 
         $this->dispatch(EasyAdminEvents::POST_INITIALIZE);
@@ -131,7 +144,7 @@ class AdminController extends AbstractController
         $subject = isset($arguments['paginator']) ? $arguments['paginator'] : $arguments['entity'];
         $event = new GenericEvent($subject, $arguments);
 
-        $this->get('event_dispatcher')->dispatch($eventName, $event);
+        $this->dispatcher->dispatch($eventName, $event);
     }
 
     /**
@@ -362,7 +375,7 @@ class AdminController extends AbstractController
             $queryParameters = array_replace($this->request->query->all(), array('action' => 'list'));
             unset($queryParameters['query']);
 
-            return $this->redirect($this->get('router')->generate('easyadmin', $queryParameters));
+            return $this->redirect($this->router->generate('easyadmin', $queryParameters));
         }
 
         $searchableFields = $this->entity['search']['fields'];
@@ -397,9 +410,9 @@ class AdminController extends AbstractController
     /**
      * It updates the value of some property of some entity to the new given value.
      *
-     * @param mixed  $entity   The instance of the entity to modify
+     * @param mixed $entity The instance of the entity to modify
      * @param string $property The name of the property to change
-     * @param bool   $value    The new value of the property
+     * @param bool $value The new value of the property
      *
      * @throws \RuntimeException
      */
@@ -523,9 +536,9 @@ class AdminController extends AbstractController
      * Performs a database query to get all the records related to the given
      * entity. It supports pagination and field sorting.
      *
-     * @param string      $entityClass
-     * @param int         $page
-     * @param int         $maxPerPage
+     * @param string $entityClass
+     * @param int $page
+     * @param int $maxPerPage
      * @param string|null $sortField
      * @param string|null $sortDirection
      * @param string|null $dqlFilter
@@ -552,8 +565,8 @@ class AdminController extends AbstractController
     /**
      * Creates Query Builder instance for all the records.
      *
-     * @param string      $entityClass
-     * @param string      $sortDirection
+     * @param string $entityClass
+     * @param string $sortDirection
      * @param string|null $sortField
      * @param string|null $dqlFilter
      *
@@ -568,11 +581,11 @@ class AdminController extends AbstractController
      * Performs a database query based on the search query provided by the user.
      * It supports pagination and field sorting.
      *
-     * @param string      $entityClass
-     * @param string      $searchQuery
-     * @param array       $searchableFields
-     * @param int         $page
-     * @param int         $maxPerPage
+     * @param string $entityClass
+     * @param string $searchQuery
+     * @param array $searchableFields
+     * @param int $page
+     * @param int $maxPerPage
      * @param string|null $sortField
      * @param string|null $sortDirection
      * @param string|null $dqlFilter
@@ -599,9 +612,9 @@ class AdminController extends AbstractController
     /**
      * Creates Query Builder instance for search query.
      *
-     * @param string      $entityClass
-     * @param string      $searchQuery
-     * @param array       $searchableFields
+     * @param string $entityClass
+     * @param string $searchQuery
+     * @param array $searchableFields
      * @param string|null $sortField
      * @param string|null $sortDirection
      * @param string|null $dqlFilter
@@ -617,7 +630,7 @@ class AdminController extends AbstractController
      * Creates the form used to edit an entity.
      *
      * @param object $entity
-     * @param array  $entityProperties
+     * @param array $entityProperties
      *
      * @return Form
      */
@@ -630,7 +643,7 @@ class AdminController extends AbstractController
      * Creates the form used to create an entity.
      *
      * @param object $entity
-     * @param array  $entityProperties
+     * @param array $entityProperties
      *
      * @return Form
      */
@@ -643,7 +656,7 @@ class AdminController extends AbstractController
      * Creates the form builder of the form used to create or edit the given entity.
      *
      * @param object $entity
-     * @param string $view   The name of the view where this form is used ('new' or 'edit')
+     * @param string $view The name of the view where this form is used ('new' or 'edit')
      *
      * @return FormBuilder
      */
@@ -676,7 +689,7 @@ class AdminController extends AbstractController
      * Creates the form object used to create or edit the given entity.
      *
      * @param object $entity
-     * @param array  $entityProperties
+     * @param array $entityProperties
      * @param string $view
      *
      * @return FormInterface
@@ -685,7 +698,7 @@ class AdminController extends AbstractController
      */
     protected function createEntityForm($entity, array $entityProperties, $view)
     {
-        if (method_exists($this, $customMethodName = 'create'.$this->entity['name'].'EntityForm')) {
+        if (method_exists($this, $customMethodName = 'create' . $this->entity['name'] . 'EntityForm')) {
             $form = $this->{$customMethodName}($entity, $entityProperties, $view);
             if (!$form instanceof FormInterface) {
                 throw new \UnexpectedValueException(sprintf(
@@ -714,8 +727,8 @@ class AdminController extends AbstractController
      * the deletion of the entity are always performed with the 'DELETE' HTTP method,
      * which requires a form to work in the current browsers.
      *
-     * @param string     $entityName
-     * @param int|string $entityId   When reusing the delete form for multiple entities, a pattern string is passed instead of an integer
+     * @param string $entityName
+     * @param int|string $entityId When reusing the delete form for multiple entities, a pattern string is passed instead of an integer
      *
      * @return Form|FormInterface
      */
@@ -724,8 +737,7 @@ class AdminController extends AbstractController
         /** @var FormBuilder $formBuilder */
         $formBuilder = $this->get('form.factory')->createNamedBuilder('delete_form')
             ->setAction($this->generateUrl('easyadmin', array('action' => 'delete', 'entity' => $entityName, 'id' => $entityId)))
-            ->setMethod('DELETE')
-        ;
+            ->setMethod('DELETE');
         $formBuilder->add('submit', LegacyFormHelper::getType('submit'), array('label' => 'delete_modal.action', 'translation_domain' => 'EasyAdminBundle'));
         // needed to avoid submitting empty delete forms (see issue #1409)
         $formBuilder->add('_easyadmin_delete_flag', LegacyFormHelper::getType('hidden'), array('data' => '1'));
@@ -752,9 +764,9 @@ class AdminController extends AbstractController
      *
      * @param string $action
      *
+     * @return Response
      * @deprecated Use the ForbiddenException instead of this method
      *
-     * @return Response
      */
     protected function renderForbiddenActionError($action)
     {
@@ -771,7 +783,7 @@ class AdminController extends AbstractController
      *   if 'createUserEntity()' exists, execute it; otherwise execute 'createEntity()'
      *
      * @param string $methodNamePattern The pattern of the method name (dynamic parts are enclosed with <> angle brackets)
-     * @param array  $arguments         The arguments passed to the executed method
+     * @param array $arguments The arguments passed to the executed method
      *
      * @return mixed
      *
@@ -807,7 +819,7 @@ class AdminController extends AbstractController
 
         $url = isset($homepageConfig['url'])
             ? $homepageConfig['url']
-            : $this->get('router')->generate($homepageConfig['route'], $homepageConfig['params']);
+            : $this->router->generate($homepageConfig['route'], $homepageConfig['params']);
 
         return $this->redirect($url);
     }
@@ -879,9 +891,9 @@ class AdminController extends AbstractController
      * Instead of defining a render method per action (list, show, search, etc.) use
      * the $actionName argument to discriminate between actions.
      *
-     * @param string $actionName   The name of the current action (list, show, new, etc.)
+     * @param string $actionName The name of the current action (list, show, new, etc.)
      * @param string $templatePath The path of the Twig template to render
-     * @param array  $parameters   The parameters passed to the template
+     * @param array $parameters The parameters passed to the template
      *
      * @return Response
      */
@@ -890,14 +902,9 @@ class AdminController extends AbstractController
         return $this->render($templatePath, $parameters);
     }
 
-    private function get(string $serviceName)
+    protected function get(string $serviceId)
     {
-        return $this->container->get($serviceName);
-    }
-
-    private function getDoctrine()
-    {
-        return $this->get('doctrine');
+        return $this->container->get($serviceId);
     }
 }
 

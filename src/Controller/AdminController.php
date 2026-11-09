@@ -143,7 +143,7 @@ class AdminController extends AbstractController
         $subject = isset($arguments['paginator']) ? $arguments['paginator'] : $arguments['entity'];
         $event = new GenericEvent($subject, $arguments);
 
-        $this->dispatcher->dispatch($eventName, $event);
+        $this->dispatcher->dispatch($event, $eventName);
     }
 
     /**

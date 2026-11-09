@@ -889,6 +889,16 @@ class AdminController extends AbstractController
     {
         return $this->render($templatePath, $parameters);
     }
+
+    private function get(string $serviceName)
+    {
+        return $this->container->get($serviceName);
+    }
+
+    private function getDoctrine()
+    {
+        return $this->get('doctrine');
+    }
 }
 
 class_alias('EasyCorp\Bundle\EasyAdminBundle\Controller\AdminController', 'JavierEguiluz\Bundle\EasyAdminBundle\Controller\AdminController', false);

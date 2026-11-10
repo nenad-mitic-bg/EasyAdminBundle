@@ -48,15 +48,15 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class AdminController extends AbstractController
 {
     /** @var array The full configuration of the entire backend */
-    protected array $config;
+    protected array $config = [];
 
     /** @var array The full configuration of the current entity */
-    protected array $entity = array();
+    protected array $entity = [];
 
     /** @var Request The instance of the current Symfony request */
-    protected Request $request;
+    protected ?Request $request = null;
 
-    protected ObjectManager $em;
+    protected ?ObjectManager $em = null;
 
     public function __construct(
         protected ManagerRegistry $doctrine,

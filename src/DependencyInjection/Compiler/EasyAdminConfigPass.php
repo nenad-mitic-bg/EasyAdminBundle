@@ -11,6 +11,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\DependencyInjection\Compiler;
 
+use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -26,7 +27,7 @@ final class EasyAdminConfigPass implements CompilerPassInterface
     public function process(ContainerBuilder $container): void
     {
         $configPasses = $this->findAndSortTaggedServices('easyadmin.config_pass', $container);
-        $definition = $container->getDefinition('easyadmin.config.manager');
+        $definition = $container->getDefinition(ConfigManager::class);
 
         foreach ($configPasses as $service) {
             $definition->addMethodCall('addConfigPass', array($service));

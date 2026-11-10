@@ -14,14 +14,15 @@ services:
         tags:
             - { name: 'kernel.cache_warmer', priority: '-2048' }
 
-    easyadmin.config.manager:
-        class: 'EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager'
+    EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager:
         public: true
         arguments:
             - '@easyadmin.cache.manager'
             - '@property_accessor'
             - '%easyadmin.config%'
             - '%kernel.debug%'
+
+    easyadmin.config.manager: '@EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager'
 
     easyadmin.query_builder:
         class: 'EasyCorp\Bundle\EasyAdminBundle\Search\QueryBuilder'

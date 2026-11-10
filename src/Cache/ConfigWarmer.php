@@ -41,6 +41,8 @@ class ConfigWarmer implements CacheWarmerInterface
             // project is being installed ('composer install' clears the cache at the end)
             // ignore this error at this point and display an error message later
         }
+
+        return [];
     }
 
     /**

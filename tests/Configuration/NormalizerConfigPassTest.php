@@ -18,7 +18,7 @@ class NormalizerConfigPassTest extends TestCase
 {
     public function testFieldsMustBeStringsOrArrays()
     {
-        $this->expectExceptionMessageIsOrContains("The values of the \"fields\" option for the \"edit\" view of the \"AppBundle\Entity\TestEntity\" entity can only be strings or arrays.");
+        $this->expectExceptionMessageMatches('/The values of the "fields" option for the "edit" view of the "AppBundle\\\\Entity\\\\TestEntity" entity can only be strings or arrays\./');
         $this->expectException(\RuntimeException::class);
         $backendConfig = array('entities' => array(
             'TestEntity' => array(
@@ -35,7 +35,7 @@ class NormalizerConfigPassTest extends TestCase
 
     public function testFieldsMustDefinePropertyOption()
     {
-        $this->expectExceptionMessageIsOrContains("One of the values of the \"fields\" option for the \"edit\" view of the \"AppBundle\Entity\TestEntity\" entity does not define neither of the mandatory options (\"property\" or \"type\").");
+        $this->expectExceptionMessageMatches('/One of the values of the "fields" option for the "edit" view of the "AppBundle\\\\Entity\\\\TestEntity" entity does not define neither of the mandatory options \("property" or "type"\)\./');
         $this->expectException(\RuntimeException::class);
         $backendConfig = array('entities' => array(
             'TestEntity' => array(

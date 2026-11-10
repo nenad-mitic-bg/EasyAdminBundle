@@ -12,9 +12,9 @@
 namespace EasyCorp\Bundle\EasyAdminBundle\Controller;
 
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager;
 use EasyCorp\Bundle\EasyAdminBundle\Event\EasyAdminEvents;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\EntityRemoveException;
@@ -22,7 +22,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Exception\ForbiddenActionException;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\NoEntitiesConfiguredException;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\UndefinedEntityException;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Util\LegacyFormHelper;
+use Exception;
 use Pagerfanta\Pagerfanta;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Form\Form;
@@ -46,31 +48,34 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class AdminController extends AbstractController
 {
     /** @var array The full configuration of the entire backend */
-    protected $config;
+    protected array $config;
 
     /** @var array The full configuration of the current entity */
-    protected $entity = array();
+    protected array $entity = array();
 
     /** @var Request The instance of the current Symfony request */
-    protected $request;
+    protected Request $request;
+
+    protected ObjectManager $em;
 
     public function __construct(
         protected ManagerRegistry $doctrine,
-        protected EntityManagerInterface $em,
         protected EventDispatcherInterface $dispatcher,
         protected UrlGeneratorInterface $router,
+        protected ConfigManager $configManager,
     ) {
     }
 
     /**
      * The 'admin' route is deprecated since version 1.8.0 and it will be removed in 2.0.
+     * @throws Exception
      */
     #[Route(path: "/", name: "easyadmin")]
     #[Route(path: "/", name: "admin")]
     public function indexAction(Request $request): RedirectResponse|Response
     {
         if ('admin' === $request->attributes->get('_route')) {
-            trigger_error(sprintf('The "admin" route is deprecated since version 1.8.0 and it will be removed in 2.0. Use the "easyadmin" route instead.'), E_USER_DEPRECATED);
+            trigger_error('The "admin" route is deprecated since version 1.8.0 and it will be removed in 2.0. Use the "easyadmin" route instead.', E_USER_DEPRECATED);
         }
 
         $this->initialize($request);
@@ -97,7 +102,7 @@ class AdminController extends AbstractController
     {
         $this->dispatch(EasyAdminEvents::PRE_INITIALIZE);
 
-        $this->config = $this->get('easyadmin.config.manager')->getBackendConfig();
+        $this->config = $this->configManager->getBackendConfig();
 
         if (0 === count($this->config['entities'])) {
             throw new NoEntitiesConfiguredException();
@@ -113,7 +118,7 @@ class AdminController extends AbstractController
             throw new UndefinedEntityException(array('entity_name' => $entityName));
         }
 
-        $this->entity = $this->get('easyadmin.config.manager')->getEntityConfiguration($entityName);
+        $this->entity = $this->configManager->getEntityConfig($entityName);
 
         $action = $request->query->get('action', 'list');
         if (!$request->query->has('sortField')) {
@@ -167,6 +172,7 @@ class AdminController extends AbstractController
      * The method that is executed when the user performs a 'list' action on an entity.
      *
      * @return Response
+     * @throws Exception
      */
     protected function listAction()
     {
@@ -190,6 +196,7 @@ class AdminController extends AbstractController
      * The method that is executed when the user performs a 'edit' action on an entity.
      *
      * @return Response|RedirectResponse
+     * @throws Exception
      */
     protected function editAction()
     {
@@ -204,7 +211,7 @@ class AdminController extends AbstractController
             $fieldsMetadata = $this->entity['list']['fields'];
 
             if (!isset($fieldsMetadata[$property]) || 'toggle' !== $fieldsMetadata[$property]['dataType']) {
-                throw new \RuntimeException(sprintf('The type of the "%s" property is not "toggle".', $property));
+                throw new RuntimeException(sprintf('The type of the "%s" property is not "toggle".', $property));
             }
 
             $this->updateEntityProperty($entity, $property, $newValue);
@@ -246,6 +253,7 @@ class AdminController extends AbstractController
      * The method that is executed when the user performs a 'show' action on an entity.
      *
      * @return Response
+     * @throws Exception
      */
     protected function showAction()
     {
@@ -277,6 +285,7 @@ class AdminController extends AbstractController
      * The method that is executed when the user performs a 'new' action on an entity.
      *
      * @return Response|RedirectResponse
+     * @throws Exception
      */
     protected function newAction()
     {
@@ -324,6 +333,7 @@ class AdminController extends AbstractController
      * remove any entity.
      *
      * @return RedirectResponse
+     * @throws Exception
      */
     protected function deleteAction()
     {
@@ -363,6 +373,7 @@ class AdminController extends AbstractController
      * The method that is executed when the user performs a query on an entity.
      *
      * @return Response
+     * @throws Exception
      */
     protected function searchAction()
     {
@@ -413,7 +424,7 @@ class AdminController extends AbstractController
      * @param string $property The name of the property to change
      * @param bool $value The new value of the property
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException|Exception
      */
     protected function updateEntityProperty($entity, $property, $value)
     {
@@ -421,7 +432,7 @@ class AdminController extends AbstractController
 
         // the method_exists() check is needed because Symfony 2.3 doesn't have isWritable() method
         if (method_exists($this->get('easy_admin.property_accessor'), 'isWritable') && !$this->get('easy_admin.property_accessor')->isWritable($entity, $property)) {
-            throw new \RuntimeException(sprintf('The "%s" property of the "%s" entity is not writable.', $property, $entityConfig['name']));
+            throw new RuntimeException(sprintf('The "%s" property of the "%s" entity is not writable.', $property, $entityConfig['name']));
         }
 
         $this->get('easy_admin.property_accessor')->setValue($entity, $property, $value);
@@ -631,7 +642,7 @@ class AdminController extends AbstractController
      * @param object $entity
      * @param array $entityProperties
      *
-     * @return Form
+     * @return FormInterface
      */
     protected function createEditForm($entity, array $entityProperties)
     {
@@ -644,7 +655,7 @@ class AdminController extends AbstractController
      * @param object $entity
      * @param array $entityProperties
      *
-     * @return Form
+     * @return FormInterface
      */
     protected function createNewForm($entity, array $entityProperties)
     {
@@ -693,7 +704,7 @@ class AdminController extends AbstractController
      *
      * @return FormInterface
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function createEntityForm($entity, array $entityProperties, $view)
     {
@@ -786,7 +797,7 @@ class AdminController extends AbstractController
      *
      * @return mixed
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function executeDynamicMethod($methodNamePattern, array $arguments = array())
     {

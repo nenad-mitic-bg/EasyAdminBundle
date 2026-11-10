@@ -24,11 +24,12 @@ services:
 
     easyadmin.config.manager: '@EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager'
 
-    easyadmin.query_builder:
-        class: 'EasyCorp\Bundle\EasyAdminBundle\Search\QueryBuilder'
+    EasyCorp\Bundle\EasyAdminBundle\Search\QueryBuilder:
         public: true
         arguments:
             - '@doctrine'
+
+    easyadmin.query_builder: '@EasyCorp\Bundle\EasyAdminBundle\Search\QueryBuilder'
 
     easyadmin.finder:
         class: 'EasyCorp\Bundle\EasyAdminBundle\Search\Finder'
@@ -45,9 +46,10 @@ services:
             - '@easyadmin.finder'
             - '@property_accessor'
 
-    easyadmin.paginator:
-        class: 'EasyCorp\Bundle\EasyAdminBundle\Search\Paginator'
+    EasyCorp\Bundle\EasyAdminBundle\Search\Paginator:
         public: true
+
+    easyadmin.paginator: '@EasyCorp\Bundle\EasyAdminBundle\Search\Paginator'
 
     easyadmin.router:
         class: 'EasyCorp\Bundle\EasyAdminBundle\Router\EasyAdminRouter'

@@ -22,6 +22,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Exception\ForbiddenActionException;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\NoEntitiesConfiguredException;
 use EasyCorp\Bundle\EasyAdminBundle\Exception\UndefinedEntityException;
 use EasyCorp\Bundle\EasyAdminBundle\Form\Util\LegacyFormHelper;
+use EasyCorp\Bundle\EasyAdminBundle\Search\Paginator as EZPaginator;
+use EasyCorp\Bundle\EasyAdminBundle\Search\QueryBuilder as EZQueryBuilder;
 use Exception;
 use Pagerfanta\Pagerfanta;
 use RuntimeException;
@@ -63,6 +65,8 @@ class AdminController extends AbstractController
         protected EventDispatcherInterface $dispatcher,
         protected UrlGeneratorInterface $router,
         protected ConfigManager $configManager,
+        protected EZQueryBuilder $ezQueryBuilder,
+        protected EZPaginator $ezPaginator,
     ) {
     }
 
@@ -569,7 +573,7 @@ class AdminController extends AbstractController
             'sort_direction' => $sortDirection,
         ));
 
-        return $this->get('easyadmin.paginator')->createOrmPaginator($queryBuilder, $page, $maxPerPage);
+        return $this->ezPaginator->createOrmPaginator($queryBuilder, $page, $maxPerPage);
     }
 
     /**
@@ -584,7 +588,7 @@ class AdminController extends AbstractController
      */
     protected function createListQueryBuilder($entityClass, $sortDirection, $sortField = null, $dqlFilter = null)
     {
-        return $this->get('easyadmin.query_builder')->createListQueryBuilder($this->entity, $sortField, $sortDirection, $dqlFilter);
+        return $this->ezQueryBuilder->createListQueryBuilder($this->entity, $sortField, $sortDirection, $dqlFilter);
     }
 
     /**
@@ -616,7 +620,7 @@ class AdminController extends AbstractController
             'searchable_fields' => $searchableFields,
         ));
 
-        return $this->get('easyadmin.paginator')->createOrmPaginator($queryBuilder, $page, $maxPerPage);
+        return $this->ezPaginator->createOrmPaginator($queryBuilder, $page, $maxPerPage);
     }
 
     /**
@@ -633,7 +637,7 @@ class AdminController extends AbstractController
      */
     protected function createSearchQueryBuilder($entityClass, $searchQuery, array $searchableFields, $sortField = null, $sortDirection = null, $dqlFilter = null)
     {
-        return $this->get('easyadmin.query_builder')->createSearchQueryBuilder($this->entity, $searchQuery, $sortField, $sortDirection, $dqlFilter);
+        return $this->ezQueryBuilder->createSearchQueryBuilder($this->entity, $searchQuery, $sortField, $sortDirection, $dqlFilter);
     }
 
     /**

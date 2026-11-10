@@ -1,5 +1,0 @@
-easy_admin:
-    entities:
-        Category:
-            class: TestApp\Entity\FunctionalTests\Category
-            label: 'Categories'

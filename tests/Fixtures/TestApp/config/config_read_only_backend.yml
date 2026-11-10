@@ -1,7 +1,0 @@
-imports:
-    - { resource: config.yml }
-
-easy_admin:
-    disabled_actions: ['delete', 'edit', 'new']
-    entities:
-        Category:     TestApp\Entity\FunctionalTests\Category

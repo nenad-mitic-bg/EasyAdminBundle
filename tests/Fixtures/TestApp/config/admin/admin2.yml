@@ -1,6 +1,0 @@
-easy_admin:
-    entities:
-        Product: TestApp\Entity\FunctionalTests\Product
-        Inventory:
-            class: TestApp\Entity\FunctionalTests\Product
-        Product2: TestApp\Entity\FunctionalTests\Product

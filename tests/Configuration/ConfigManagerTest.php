@@ -11,6 +11,7 @@
 
 namespace EasyCorp\Bundle\EasyAdminBundle\Tests\Configuration;
 
+use EasyCorp\Bundle\EasyAdminBundle\Configuration\ConfigManager;
 use EasyCorp\Bundle\EasyAdminBundle\Tests\Polyfill\DMS\ArraySubsetAsserts;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Kernel;
@@ -134,7 +135,7 @@ class ConfigManagerTest extends TestCase
         $app = new \DynamicConfigLoadingKernel($configuration['easy_admin']);
         $app->boot();
 
-        $backendConfig = $app->getContainer()->get('easyadmin.config.manager')->getBackendConfig();
+        $backendConfig = $app->getContainer()->get(ConfigManager::class)->getBackendConfig();
 
         return $backendConfig;
     }

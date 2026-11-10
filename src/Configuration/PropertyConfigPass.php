@@ -115,7 +115,7 @@ class PropertyConfigPass implements ConfigPassInterface
 
                 $properties[$propertyName] = array_replace(
                     $this->defaultEntityFieldConfig,
-                    DoctrineMappingToArrayConverter::convert($propertyMetadata),
+                    is_array($propertyMetadata) ? $propertyMetadata : DoctrineMappingToArrayConverter::convert($propertyMetadata),
                     array(
                         'property' => $propertyName,
                         'dataType' => $propertyMetadata['type'],

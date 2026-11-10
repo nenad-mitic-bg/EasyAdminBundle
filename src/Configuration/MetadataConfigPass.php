@@ -80,7 +80,7 @@ class MetadataConfigPass implements ConfigPassInterface
         // introspect fields for entity associations
         foreach ($entityMetadata->associationMappings as $fieldName => $associationMetadata) {
             $entityPropertiesMetadata[$fieldName] = array_merge(
-                DoctrineMappingToArrayConverter::convert($associationMetadata),
+                is_array($associationMetadata) ? $associationMetadata : DoctrineMappingToArrayConverter::convert($associationMetadata),
                 array(
                     'type' => 'association',
                     'associationType' => $associationMetadata['type'],

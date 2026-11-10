@@ -27,7 +27,6 @@ abstract class AbstractTestCase extends WebTestCase
 
     protected function setUp(): void
     {
-        $this->initClient();
         $this->initDatabase();
     }
 
